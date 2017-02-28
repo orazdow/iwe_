@@ -54,17 +54,18 @@ for (var i = 0; i < 60; i++) {
 var n = 0;
 window.setInterval(function(){
   for (var i = 0; i < oscs.length; i++) {
-    oscs[i].gain.value = 0.2*pow(noise(i, n),3); 
+    oscs[i].gain.value = 0.2*Math.pow(noise(i, n),3); 
   } n+= 0.1; web();
 },50);
 
 var msg = new SpeechSynthesisUtterance();
-window.speechSynthesis.onvoiceschanged = function() {
+
+window.speechSynthesis.onvoiceschanged = function() { 
     var voices = window.speechSynthesis.getVoices();
   //  console.log(voices);
   
 
-var voiceindex = 4;
+var voiceindex = 0;
 //what to pick for the voice index:.....
 //4 : an english guy (funny)
 // 7: french guy / girl (funny)
@@ -84,8 +85,9 @@ msg.lang = 'en-US';
 
 
 function tts(str){
-  msg.text = rmvTild(rmvBrk(rmvAt(rmvAt(rmvAt(str, '@'), '@'), '#')));
-  speechSynthesis.speak(msg);
+ // msg = new SpeechSynthesisUtterance();
+  msg.text =  rmvTild(rmvBrk(rmvAt(rmvAt(rmvAt(str, '@'), '@'), '#')));
+  speechSynthesis.speak(msg); 
 }
 
 //p5 part for demo...
