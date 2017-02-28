@@ -1,6 +1,25 @@
+
+///USER VARIABLES
+//////////////////
+///Refresh after changing, if no internet set online to false
+//////////////////////////////////////////////////////////////
+//************************************************************
+
+// sine tone level:
+var tonelev = 0.5;
+
+// true == english guy, false == standard us voice (if  no internet)
+var online = true;
+
+
+//***********************************************************
+/////////////////////////////////////////////////////////////
+//***********************************************************
+
 var tweetColor = "rgb(255, 255, 255)";
 var tweetHoverColor = "rgb(242, 241, 237)";
 var timer;
+
 
   //  the enlargening...
 [].forEach.call(document.getElementsByClassName('tweet'), function(el){
@@ -12,14 +31,37 @@ var timer;
 });
 
 // hover actions
+
 [].forEach.call(document.getElementsByClassName('tweet'), function(el){
-el.addEventListener("mouseenter", function(){
+	if(!online){
+   el.addEventListener("mouseenter", function(){
+
+   el.style["backgroundColor"] = tweetHoverColor;
+   
+   speechSynthesis.cancel();
+
+   var str = el.querySelector("p.tweet-text").textContent;
+   // var name = el.querySelector(".fullname > span").textContent;
+   // console.log(name);
+
+   window.setTimeout(function(){ scribble(str); }, 20);
+   timer = window.setTimeout(function(){ tts(str); }, 250);
+
+
+});
+
+el.addEventListener("mouseleave", function(){
+   el.style["backgroundColor"] = tweetColor;
+   window.clearTimeout(timer); 
+});
+}else{
+	el.addEventListener("mouseenter", function(){
    el.style["backgroundColor"] = tweetHoverColor;
    timer = window.setTimeout(function(){
-    var str = el.querySelector("p.tweet-text").textContent;
+   	var str = el.querySelector("p.tweet-text").textContent;
     scribble(str);
     tts(str);
-    console.log(str); 
+   	console.log(str); 
    }, 20);
 
 });
@@ -28,16 +70,25 @@ el.addEventListener("mouseleave", function(){
    el.style["backgroundColor"] = tweetColor;
    window.clearTimeout(timer); speechSynthesis.cancel();
 });
+
+
+}
+
+
 });
+
 
  // open links in new tab
 [].forEach.call(document.getElementsByTagName("a"), function(el){
    el.target = "_blank";
 });
 
+
 var context = new AudioContext();
 var output = context.createGain();
 output.connect(context.destination);
+
+output.gain.value = tonelev;//0.2;
 
 var oscs = [];
 for (var i = 0; i < 60; i++) {
@@ -59,36 +110,41 @@ window.setInterval(function(){
 },50);
 
 var msg = new SpeechSynthesisUtterance();
+
 window.speechSynthesis.onvoiceschanged = function() {
     var voices = window.speechSynthesis.getVoices();
-  //  console.log(voices);
+  // console.log(voices);
   
 
 
 
 
-var voiceindex = 4;
-//what to pick for the voice index:.....
-//4 : an english guy (funny)
-// 7: french guy / girl (funny)
-//8: indian
-//12 : korean
-//14: slovenian
+var voiceindex = 0;
+if(online){
+	voiceindex = 4;
+}
+
 
 msg.voice = voices[voiceindex]; 
-msg.volume = 1; // 0 to 1
-msg.rate = 0.8; // 0.1 to 10
-msg.pitch = 1.2; //0 to 2
+msg.volume = 0.9; // 0 to 1
+msg.rate = 0.9; // 0.1 to 10
+
+msg.pitch = 0.3;
+if(online){
+msg.pitch = 1.2;	
+}
+ //0 to 2
 msg.text = '';
 msg.lang = 'en-US';
-
     
 };
 
 
 function tts(str){
+
   msg.text = rmvTild(rmvBrk(rmvAt(rmvAt(rmvAt(str, '@'), '@'), '#')));
-  speechSynthesis.speak(msg);
+  speechSynthesis.speak(msg);	
+
 }
 
 //p5 part for demo...
