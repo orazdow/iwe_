@@ -16,10 +16,10 @@ var timer;
 el.addEventListener("mouseenter", function(){
    el.style["backgroundColor"] = tweetHoverColor;
    timer = window.setTimeout(function(){
-   	var str = el.querySelector("p.tweet-text").textContent;
+    var str = el.querySelector("p.tweet-text").textContent;
     scribble(str);
     tts(str);
-   	console.log(str); 
+    console.log(str); 
    }, 20);
 
 });
@@ -54,18 +54,17 @@ for (var i = 0; i < 60; i++) {
 var n = 0;
 window.setInterval(function(){
   for (var i = 0; i < oscs.length; i++) {
-    oscs[i].gain.value = 0.2*Math.pow(noise(i, n),3); 
+    oscs[i].gain.value = 0.2*pow(noise(i, n),3); 
   } n+= 0.1; web();
 },50);
 
 var msg = new SpeechSynthesisUtterance();
-
-window.speechSynthesis.onvoiceschanged = function() { 
+window.speechSynthesis.onvoiceschanged = function() {
     var voices = window.speechSynthesis.getVoices();
   //  console.log(voices);
   
 
-var voiceindex = 0;
+var voiceindex = 4;
 //what to pick for the voice index:.....
 //4 : an english guy (funny)
 // 7: french guy / girl (funny)
@@ -85,9 +84,8 @@ msg.lang = 'en-US';
 
 
 function tts(str){
- // msg = new SpeechSynthesisUtterance();
-  msg.text =  rmvTild(rmvBrk(rmvAt(rmvAt(rmvAt(str, '@'), '@'), '#')));
-  speechSynthesis.speak(msg); 
+  msg.text = rmvTild(rmvBrk(rmvAt(rmvAt(rmvAt(str, '@'), '@'), '#')));
+  speechSynthesis.speak(msg);
 }
 
 //p5 part for demo...
@@ -112,17 +110,17 @@ background(255);
 stroke(0);
 web();
 if(strArr){
-//		beginShape();
+//    beginShape();
 stroke(0);
 wmap = [];
 strArr.forEach(function(word, i){
-	var x = noise(i, b)*600;
-	var y = noise(b, i)*600;
+  var x = noise(i, b)*600;
+  var y = noise(b, i)*600;
   wmap.push({w: word, xx: x, yy: y});
  //   vertex(x, y);
-//	text(word, x, y);
+//  text(word, x, y);
 });
-//	endShape();
+//  endShape();
 
 }
 
@@ -141,7 +139,7 @@ function scribble(str){
     strArr = str.split(' ');
     //console.log(strArr);
     b+= 500;
-	redraw();
+  redraw();
 }
 function web(){ background(255,255,255,200);
    stroke(0);
@@ -218,5 +216,3 @@ function rmvTild(str){
  
   return str;
 }
-
-
