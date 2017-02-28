@@ -144,6 +144,28 @@ function sortedDbToJSON(collection, fname){
 
 }
 
+function dbToJSONImgRef(collection, fname, user1, file1, user2, file2){
+  fname = fname || 'data.json';
+  collection.find().sort({id : 1}).toArray((err, docs)=>{     
+    if(!err){
+     docs.forEach((el, i)=>{
+     if(el.user.screen_name == user1){
+        el.user.profile_image_url = file1;
+     }else if(el.user.screen_name == user2){
+      el.user.profile_image_url = file2;
+     }
+     }); 
+    var json = JSON.stringify(docs);  
+    fs.writeFile(fname, json, 'utf8', ()=>{
+      console.log('wrote json');
+    });   
+  }   
+    else{console.log(err)}
+  });
+
+
+}
+
 function setMongo(bool){
 	mongo = bool;
 }
@@ -163,6 +185,7 @@ module.exports = {
   setRevLog : setRevLog,
 	showTweet : showTweet,
 	getSortedDB : getSortedDB,
-	sortedDbToJSON : sortedDbToJSON
+	sortedDbToJSON : sortedDbToJSON,
+  dbToJSONImgRef : dbToJSONImgRef
 }
 
