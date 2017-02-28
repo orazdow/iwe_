@@ -64,6 +64,9 @@ window.speechSynthesis.onvoiceschanged = function() {
   //  console.log(voices);
   
 
+
+
+
 var voiceindex = 4;
 //what to pick for the voice index:.....
 //4 : an english guy (funny)
