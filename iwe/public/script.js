@@ -11,7 +11,6 @@ var tonelev = 0.5;
 // true == english guy, false == standard us voice (if  no internet)
 var online = true;
 
-
 //***********************************************************
 /////////////////////////////////////////////////////////////
 //***********************************************************
@@ -37,27 +36,23 @@ var timer;
    el.addEventListener("mouseenter", function(){
 
    el.style["backgroundColor"] = tweetHoverColor;
-   
    speechSynthesis.cancel();
-
    var str = el.querySelector("p.tweet-text").textContent;
    // var name = el.querySelector(".fullname > span").textContent;
    // console.log(name);
-
    window.setTimeout(function(){ scribble(str); }, 20);
    timer = window.setTimeout(function(){ tts(str); }, 250);
-
-
 });
 
 el.addEventListener("mouseleave", function(){
    el.style["backgroundColor"] = tweetColor;
    window.clearTimeout(timer); 
 });
-}else{
+}
+else{
 	el.addEventListener("mouseenter", function(){
-   el.style["backgroundColor"] = tweetHoverColor;
-   timer = window.setTimeout(function(){
+    el.style["backgroundColor"] = tweetHoverColor;
+    timer = window.setTimeout(function(){
    	var str = el.querySelector("p.tweet-text").textContent;
     scribble(str);
     tts(str);
@@ -71,12 +66,9 @@ el.addEventListener("mouseleave", function(){
    window.clearTimeout(timer); speechSynthesis.cancel();
 });
 
-
 }
 
-
 });
-
 
  // open links in new tab
 [].forEach.call(document.getElementsByTagName("a"), function(el){
@@ -109,33 +101,30 @@ window.setInterval(function(){
   } n+= 0.1; web();
 },50);
 
+
 var msg = new SpeechSynthesisUtterance();
 
 window.speechSynthesis.onvoiceschanged = function() {
-    var voices = window.speechSynthesis.getVoices();
-  // console.log(voices);
-  
+
+var voices = window.speechSynthesis.getVoices();
+// console.log(voices);
+	var voiceindex = 0;
+	if(online){
+		voiceindex = 4;
+	}
 
 
+	msg.voice = voices[voiceindex]; 
+	msg.volume = 0.9; // 0 to 1
+	msg.rate = 0.9; // 0.1 to 10
 
-
-var voiceindex = 0;
-if(online){
-	voiceindex = 4;
-}
-
-
-msg.voice = voices[voiceindex]; 
-msg.volume = 0.9; // 0 to 1
-msg.rate = 0.9; // 0.1 to 10
-
-msg.pitch = 0.3;
-if(online){
-msg.pitch = 1.2;	
-}
- //0 to 2
-msg.text = '';
-msg.lang = 'en-US';
+	msg.pitch = 0.3;
+	if(online){
+	msg.pitch = 1.2;	
+	}
+	 //0 to 2
+	msg.text = '';
+	msg.lang = 'en-US';
     
 };
 
@@ -152,8 +141,8 @@ function tts(str){
 var a = 0;
 var b = 0;
 var strArr;
- var  osc;
- var wmap = [];
+var  osc;
+var wmap = [];
 
 function setup() {
   createCanvas(500, 500).parent("display");
