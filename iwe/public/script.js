@@ -31,7 +31,7 @@ var mainPitch = 1.2;
 var mainRate = 0.9;
 
 
-//dual voices (a bit silly)  
+//dual voices (somewhat silly)  
 var twoVoices = false;  /////<<true to activate dual voice...
 var dualPitch = true;  
 // for dual voices
