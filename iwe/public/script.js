@@ -1,8 +1,8 @@
 
-///USER VARIABLES
-//////////////////
+///USER VARIABLES*******************************************
+//
 ///Refresh after changing, if no internet set online to false
-//////////////////////////////////////////////////////////////
+//
 //************************************************************
 
 // sine tone level:
@@ -11,8 +11,17 @@ var tonelev = 0.5;
 // true == english guy, false == standard us voice (if  no internet)
 var online = true;
 
-//***********************************************************
-/////////////////////////////////////////////////////////////
+// use random speech
+var useRandom = true;
+// min interval (ms)
+var minRandomInterval = 90000;
+// max intefval (ms)  (if same, will be constant interval)
+var maxRandominterval = 5*60*1000;
+// timeout to resume randomspeech after interaction (ms)
+var randResumeTimeout = 60000;
+
+//**********************************************************
+//
 //***********************************************************
 
 var tweetColor = "rgb(255, 255, 255)";
@@ -31,10 +40,10 @@ var timer;
 
 // hover actions
 
-[].forEach.call(document.getElementsByClassName('tweet'), function(el){
+[].forEach.call(document.getElementsByClassName('tweet'), function(el, i){
 	if(!online){
    el.addEventListener("mouseenter", function(){
-
+   randCancel();
    el.style["backgroundColor"] = tweetHoverColor;
    speechSynthesis.cancel();
    var str = el.querySelector("p.tweet-text").textContent;
@@ -51,12 +60,13 @@ el.addEventListener("mouseleave", function(){
 }
 else{
 	el.addEventListener("mouseenter", function(){
+	randCancel(true);	
     el.style["backgroundColor"] = tweetHoverColor;
     timer = window.setTimeout(function(){
    	var str = el.querySelector("p.tweet-text").textContent;
     scribble(str);
     tts(str);
-   	console.log(str); 
+   //	console.log(str); 
    }, 20);
 
 });
@@ -67,6 +77,8 @@ el.addEventListener("mouseleave", function(){
 });
 
 }
+	el.id = 'tw' + i;
+
 
 });
 
@@ -74,6 +86,69 @@ el.addEventListener("mouseleave", function(){
 [].forEach.call(document.getElementsByTagName("a"), function(el){
    el.target = "_blank";
 });
+
+var randgo = true;
+var randel = document.querySelector('#tw200');
+
+//defaults if not set
+// var _randresumetimeout = 60000;
+// var _minint = 90000;
+// var _maxint = 5*60*1000;
+
+// if(typeof randResumeTimeout === 'undefined'){
+// 	randResumeTimeout = _randresumetimeout;
+// }
+
+// if(typeof minRandomInterval === 'undefined'){
+// 	minRandomInterval = _minint;
+// }
+// if(typeof maxRandomInterval === 'undefined'){
+// 	maxRandominterval = _maxint;
+// }
+
+if(useRandom){
+
+var randinterval = randomInterval(minRandomInterval, maxRandominterval) || 10000;
+console.log(randMsg());
+
+var randTimer = window.setInterval(function(){ 
+    randel.style["backgroundColor"] = tweetColor;
+    if(randgo){
+	var sel = '#tw'+Math.floor(Math.random()*278);
+	randel = document.querySelector(sel);
+	window.location.hash = sel;
+	randel.style["backgroundColor"] = tweetHoverColor;
+	var rstr = document.querySelector(sel+" p.tweet-text").textContent;
+	 scribble(rstr);
+	 tts(rstr);
+	 randinterval = randomInterval(minRandomInterval, maxRandominterval);
+	 console.log(randMsg());
+	}
+}, randinterval);
+}
+
+function randCancel(speechcancel){
+	if(useRandom){
+	randgo = false;
+	window.setTimeout(function(){ randgo = true; }, randResumeTimeout);
+
+	if(randel){
+	randel.style["backgroundColor"] = tweetColor;
+	}
+	if(speechcancel){
+		speechSynthesis.cancel();
+	}
+	}
+}
+
+function randomInterval(min, max){
+	if(min > max){ max = min;}
+	return min + Math.floor(Math.random() * ((max+1) - min));
+}
+
+function randMsg(){
+ return 'next random: '+(randinterval/1000)+' seconds / '+(randinterval/60000)+' minutes';
+}
 
 
 var context = new AudioContext();
@@ -133,6 +208,7 @@ function tts(str){
 
   msg.text = rmvTild(rmvBrk(rmvAt(rmvAt(rmvAt(str, '@'), '@'), '#')));
   speechSynthesis.speak(msg);	
+  console.log(str);
 
 }
 
