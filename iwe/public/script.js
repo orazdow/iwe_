@@ -1,38 +1,77 @@
 
-///USER VARIABLES*******************************************
+//USER VARIABLES*******************************************
 //
-///Refresh after changing, if no internet set online to false
+//Refresh after changing, if no internet set online to false
 //
 //************************************************************
 
+
 // sine tone level:
-var tonelev = 0.5;
+var tonelev = 0.5;              
 
-// true == english guy, false == standard us voice (if  no internet)
-var online = true;
+// false == us voice (set to false if  no internet)
+var online = true;             
 
-// use random speech
-var useRandom = true;
 
-// min interval (ms)
-var minRandomInterval = 90000;
-// max intefval (ms)  (if same, will be constant interval)
-var maxRandominterval = 5*60*1000;
+// use random speech:         
+var useRandom = true;         
+
+// min interval (ms)           
+var minRandomInterval = 90000;                  
+// max intefval (ms)  (if same, will be const interval)
+var maxRandominterval = 7*60*1000;
 // timeout to resume randomspeech after interaction (ms)
 var randResumeTimeout = 60000;
+
+
+
+//default voice settings
+var mainVoice = 4; // uk engligh
+var mainPitch = 1.2;
+var mainRate = 0.9;
+
+
+//dual voices (a bit silly)  
+var twoVoices = false;  /////<<true to activate dual voice...
+var dualPitch = true;  
+// for dual voices
+var maxVoice = 8;
+var jamieVoice = 4;
+
+var maxPitch = 1.2;
+var jamiePitch = 0.3;
+
 
 //**********************************************************
 //
 //***********************************************************
+//voice indexes
+//0: offline default
+//1: german
+//2: us english
+//3: english female
+//4 : an english guy (good) 
+//5,6 : spanidh
+//7: french guy / girl 
+//8: indian guy / girl (good)
+//9: indonesian
+//10: italian
+//11: japanese
+//12 : korean (good)
+//13: netherlands
+//14: slovenian (good)
+//15: brazil
+//16: russian
+//17, 18, 19: chinese
 
 var tweetColor = "rgb(255, 255, 255)";
 var tweetHoverColor = "rgb(242, 241, 237)";
-var timer;
+var timer; 
+var numtweets = 278;
 
 
   //  the enlargening...
 [].forEach.call(document.getElementsByClassName('tweet'), function(el){
-   //   el.style["min-height"] = "60px"; 
       el.style["padding"] = "15px 21px";
       el.style["font-size"] = "20px"; 
       el.style["line-height"] = "23px";
@@ -40,9 +79,33 @@ var timer;
 });
 
 // hover actions
-
 [].forEach.call(document.getElementsByClassName('tweet'), function(el, i){
-	if(!online){
+	if(online){
+	el.addEventListener("mouseenter", function(){
+	randCancel(true);	
+    el.style["backgroundColor"] = tweetHoverColor;
+   
+    var name;
+    if(twoVoices){
+    name = el.querySelector(".fullname > span").textContent;
+   // console.log(name);
+    }
+    timer = window.setTimeout(function(){
+   	var str = el.querySelector("p.tweet-text").textContent;
+    scribble(str);
+    tts(str, name);
+   //	console.log(str); 
+   }, 20);
+
+});
+
+el.addEventListener("mouseleave", function(){
+   el.style["backgroundColor"] = tweetColor;
+   window.clearTimeout(timer); speechSynthesis.cancel();
+});
+
+}
+else{
    el.addEventListener("mouseenter", function(){
    randCancel();
    el.style["backgroundColor"] = tweetHoverColor;
@@ -59,27 +122,7 @@ el.addEventListener("mouseleave", function(){
    window.clearTimeout(timer); 
 });
 }
-else{
-	el.addEventListener("mouseenter", function(){
-	randCancel(true);	
-    el.style["backgroundColor"] = tweetHoverColor;
-    timer = window.setTimeout(function(){
-   	var str = el.querySelector("p.tweet-text").textContent;
-    scribble(str);
-    tts(str);
-   //	console.log(str); 
-   }, 20);
-
-});
-
-el.addEventListener("mouseleave", function(){
-   el.style["backgroundColor"] = tweetColor;
-   window.clearTimeout(timer); speechSynthesis.cancel();
-});
-
-}
 	el.id = 'tw' + i;
-
 
 });
 
@@ -88,24 +131,10 @@ el.addEventListener("mouseleave", function(){
    el.target = "_blank";
 });
 
+// speech randomizer
+
 var randgo = true;
 var randel = document.querySelector('#tw200');
-
-//defaults if not set
-// var _randresumetimeout = 60000;
-// var _minint = 90000;
-// var _maxint = 5*60*1000;
-
-// if(typeof randResumeTimeout === 'undefined'){
-// 	randResumeTimeout = _randresumetimeout;
-// }
-
-// if(typeof minRandomInterval === 'undefined'){
-// 	minRandomInterval = _minint;
-// }
-// if(typeof maxRandomInterval === 'undefined'){
-// 	maxRandominterval = _maxint;
-// }
 
 if(useRandom){
 
@@ -115,13 +144,18 @@ console.log(randMsg());
 var randTimer = window.setInterval(function(){ 
     randel.style["backgroundColor"] = tweetColor;
     if(randgo){
-	var sel = '#tw'+Math.floor(Math.random()*278);
+	var sel = '#tw'+Math.floor(Math.random()*numtweets);
 	randel = document.querySelector(sel);
 	window.location.hash = sel;
 	randel.style["backgroundColor"] = tweetHoverColor;
 	var rstr = document.querySelector(sel+" p.tweet-text").textContent;
+	var name;
+    if(twoVoices){
+    name = randel.querySelector(".fullname > span").textContent;
+   // console.log(name);
+    }
 	 scribble(rstr);
-	 tts(rstr);
+	 tts(rstr, name);
 	 randinterval = randomInterval(minRandomInterval, maxRandominterval);
 	 console.log(randMsg());
 	}
@@ -148,9 +182,10 @@ function randomInterval(min, max){
 }
 
 function randMsg(){
- return 'next random: '+(randinterval/1000)+' seconds / '+(randinterval/60000)+' minutes';
+ return 'next random: '+(randinterval/60000)+' minutes';
 }
 
+// tone generator
 
 var context = new AudioContext();
 var output = context.createGain();
@@ -177,43 +212,47 @@ window.setInterval(function(){
   } n+= 0.1; web();
 },50);
 
+///speech synthesis
 
 var msg = new SpeechSynthesisUtterance();
+var voices;
 
-window.speechSynthesis.onvoiceschanged = function() {
+window.speechSynthesis.onvoiceschanged = function(){
 
-var voices = window.speechSynthesis.getVoices();
-// console.log(voices);
+	voices = window.speechSynthesis.getVoices();
+	//console.log(voices);
 	var voiceindex = 0;
 	if(online){
-		voiceindex = 4;
+		voiceindex = mainVoice || 4;
 	}
-
 
 	msg.voice = voices[voiceindex]; 
 	msg.volume = 0.9; // 0 to 1
-	msg.rate = 0.9; // 0.1 to 10
+	msg.rate = mainRate || 0.9; // 0.1 to 10
 
 	msg.pitch = 0.3;
+
 	if(online){
-	msg.pitch = 1.2;	
+	msg.pitch =  mainPitch || 1.2; 	
 	}
 	 //0 to 2
 	msg.text = '';
 	msg.lang = 'en-US';
-    
+
 };
 
-
-function tts(str){
-
+function tts(str, name){ 
+  if(online && twoVoices){
+  if(name === 'Max Razdow'){ msg.voice = voices[maxVoice]; if(dualPitch){msg.pitch = maxPitch};  } 
+  if(name === 'Jamie Zigelbaum'){ msg.voice = voices[jamieVoice]; if(dualPitch){msg.pitch = jamiePitch}; }	
+  }
   msg.text = rmvTild(rmvBrk(rmvAt(rmvAt(rmvAt(str, '@'), '@'), '#')));
   speechSynthesis.speak(msg);	
   console.log(str);
 
 }
 
-//p5 part for demo...
+////p5 part for demo...
 
 var a = 0;
 var b = 0;
@@ -222,53 +261,54 @@ var  osc;
 var wmap = [];
 
 function setup() {
-  createCanvas(500, 500).parent("display");
-  noLoop();
-  textSize(15);
-  noFill();
 
+createCanvas(500, 500).parent("display");
+noLoop();
+textSize(15);
+noFill();
 
 }
 
 function draw() {
+
 background(255);
 stroke(0);
 web();
+
+ // word scribble
 if(strArr){
-//    beginShape();
-stroke(0);
-wmap = [];
+	stroke(0);
+	wmap = [];
 strArr.forEach(function(word, i){
   var x = noise(i, b)*600;
   var y = noise(b, i)*600;
   wmap.push({w: word, xx: x, yy: y});
- //   vertex(x, y);
-//  text(word, x, y);
+
 });
-//  endShape();
-
 }
 
 }
-
 function mmap(){
   beginShape();
-  for (var i = 0; i < wmap.length; i++) {
+
+for (var i = 0; i < wmap.length; i++) {
     vertex(wmap[i].xx, wmap[i].yy);
     text(wmap[i].w, wmap[i].xx, wmap[i].yy);
-  }
+}
   endShape();
 }
 
-function scribble(str){
-    strArr = str.split(' ');
-    //console.log(strArr);
-    b+= 500;
-  redraw();
+function scribble(str){	
+	strArr = str.split(' ');
+	b+= 500;
+	redraw();
 }
-function web(){ background(255,255,255,200);
-   stroke(0);
-mmap(); 
+
+ // bkgd polygon
+function web(){ 
+	background(255,255,255,200);
+	stroke(0);
+ 	mmap(); 
  stroke(0,0,0,100);
   beginShape();
 for (var i = 0; i < 10; i++) {
@@ -281,6 +321,8 @@ endShape();
 a+= 0.03;
 
 }
+
+// text cleanup functions
 
 function rmvAt(str, char){
   var s = -1; var e = -1;
