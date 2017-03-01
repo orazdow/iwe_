@@ -13,6 +13,7 @@ var online = true;
 
 // use random speech
 var useRandom = true;
+
 // min interval (ms)
 var minRandomInterval = 90000;
 // max intefval (ms)  (if same, will be constant interval)
