@@ -267,7 +267,7 @@ if(online && twoVoices){
   		msg.rate = jamieVoice.rate;
   	}
 }
-  msg.text = rmvTild(rmvBrk(rmvAt(rmvAt(rmvAt(str, '@'), '@'), '#')));
+  msg.text = changeSubj(rmvTild(rmvBrk(rmvAt(rmvAt(rmvAt(str, '@'), '@'), '#'))));
   speechSynthesis.speak(msg);	
   console.log(str);
 
@@ -378,7 +378,7 @@ function rmvAt(str, char){
 }
 
 function changeSubj(str){
-	return str.replace('subj ', 'sub-j ');
+	return str.replace('subj ', 'subge ');
 }
 
 function rmvBrk(str){
