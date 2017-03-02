@@ -378,7 +378,7 @@ function rmvAt(str, char){
 }
 
 function changeSubj(str){
-	return str.replace('subj ', 'subge');
+	return str.replace('subj ', 'sub-j ');
 }
 
 function rmvBrk(str){
