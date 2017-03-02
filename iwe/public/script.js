@@ -41,7 +41,7 @@ var twoVoices = true;
 var maxVoice = {
 	voice: 4,
 	pitch: 1.1,
-	vol: 0.8
+	vol: 0.78
 }
 
 var jamieVoice = {
