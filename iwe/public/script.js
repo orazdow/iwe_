@@ -7,7 +7,7 @@
 
 
 // sine tone level:
-var tonelev = 0.5;              
+var tonelev = 0.4;              
 
 // false == us voice (set to false if  no internet)
 var online = true;             
@@ -24,23 +24,31 @@ var maxRandominterval = 7*60*1000;
 var randResumeTimeout = 60000;
 
 
-
 //default voice settings
 var mainVoice = 4; // uk engligh
 var mainPitch = 1.2;
 var mainRate = 0.9;
 
+//dual voices 
+var twoVoices = true;  
 
-//dual voices (somewhat silly)  
-var twoVoices = false;  /////<<true to activate dual voice...
-var dualPitch = true;  
-// for dual voices
-var maxVoice = 8;
-var jamieVoice = 4;
+// var maxVoice = { //indian
+// 	voice: 8,
+// 	pitch: 1.2,
+// 	vol: 1
+// }
 
-var maxPitch = 1.2;
-var jamiePitch = 0.3;
+var maxVoice = {
+	voice: 4,
+	pitch: 1.1,
+	vol: 0.8
+}
 
+var jamieVoice = {
+	voice: 4,
+	pitch: 0.3,
+	vol: 0.9
+}
 
 //**********************************************************
 //
@@ -242,10 +250,23 @@ window.speechSynthesis.onvoiceschanged = function(){
 };
 
 function tts(str, name){ 
-  if(online && twoVoices){
-  if(name === 'Max Razdow'){ msg.voice = voices[maxVoice]; if(dualPitch){msg.pitch = maxPitch};  } 
-  if(name === 'Jamie Zigelbaum'){ msg.voice = voices[jamieVoice]; if(dualPitch){msg.pitch = jamiePitch}; }	
-  }
+
+if(online && twoVoices){
+  	if(name === 'Max Razdow'){
+  		msg.voice = voices[maxVoice.voice];
+  		msg.pitch = maxVoice.pitch;
+  		msg.volume = maxVoice.vol;
+  		if('rate' in maxVoice)
+  		msg.rate = maxVoice.rate;
+  	}
+  	if(name === 'Jamie Zigelbaum'){
+  		msg.voice = voices[jamieVoice.voice];
+  		msg.pitch = jamieVoice.pitch;
+  		msg.volume = jamieVoice.vol;
+  		if('rate' in jamieVoice)
+  		msg.rate = jamieVoice.rate;
+  	}
+}
   msg.text = rmvTild(rmvBrk(rmvAt(rmvAt(rmvAt(str, '@'), '@'), '#')));
   speechSynthesis.speak(msg);	
   console.log(str);
