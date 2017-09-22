@@ -39,13 +39,13 @@ var twoVoices = true;
 // }
 
 var maxVoice = {
-	voice: 4,
-	pitch: 1.1,
+	voice: 5,
+	pitch: 1,
 	vol: 0.78
 }
 
 var jamieVoice = {
-	voice: 4,
+	voice: 5,
 	pitch: 0.3,
 	vol: 0.9
 }
@@ -57,9 +57,10 @@ var jamieVoice = {
 //0: offline default
 //1: german
 //2: us english
-//3: english female
-//4 : an english guy (good) 
-//5,6 : spanidh
+//3: us female
+//4: english female (good) 
+//5: english male (good)
+//6: spanidh
 //7: french guy / girl 
 //8: indian guy / girl (good)
 //9: indonesian
