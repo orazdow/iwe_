@@ -25,8 +25,8 @@ var randResumeTimeout = 60000;
 
 
 //default voice settings
-var mainVoice = 4; // uk engligh
-var mainPitch = 1.2;
+var mainVoice = 5; // uk engligh
+var mainPitch = 1.1;
 var mainRate = 0.9;
 
 //dual voices 
@@ -40,7 +40,7 @@ var twoVoices = true;
 
 var maxVoice = {
 	voice: 5,
-	pitch: 1,
+	pitch: 1.1,
 	vol: 0.78
 }
 
