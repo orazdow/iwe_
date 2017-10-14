@@ -40,7 +40,7 @@ var twoVoices = true;
 
 var maxVoice = {
 	voice: 5,
-	pitch: 1,
+	pitch: 1.1,
 	vol: 0.78
 }
 
