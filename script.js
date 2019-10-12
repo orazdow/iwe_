@@ -25,8 +25,8 @@ var randResumeTimeout = 60000;
 
 
 //default voice settings
-var mainVoice = 4; // uk engligh
-var mainPitch = 1.2;
+var mainVoice = 5; // uk engligh
+var mainPitch = 1.1;
 var mainRate = 0.9;
 
 //dual voices 
@@ -40,8 +40,8 @@ var twoVoices = true;
 
 var maxVoice = {
 	voice: 5,
-	pitch: 1.1,
-	vol: 0.78
+	pitch: 1,
+	vol: 0.76
 }
 
 var jamieVoice = {
@@ -78,7 +78,10 @@ var tweetHoverColor = "rgb(242, 241, 237)";
 var timer; 
 var numtweets = 278;
 
-
+var context;
+var output;
+var msg;
+var voices;
   //  the enlargening...
 [].forEach.call(document.getElementsByClassName('tweet'), function(el){
       el.style["padding"] = "15px 21px";
@@ -196,35 +199,41 @@ function randMsg(){
 
 // tone generator
 
-var context = new AudioContext();
-var output = context.createGain();
-output.connect(context.destination);
+function initAudio(event){
 
-output.gain.value = tonelev;//0.2;
+	// console.log('hi');
+	context = new AudioContext();
+	output = context.createGain();
+	output.connect(context.destination);
 
-var oscs = [];
-for (var i = 0; i < 60; i++) {
-    var a = context.createOscillator();
-    var b = context.createGain()
-    a.frequency.value = 50*(7+Math.pow(1.7, i/18));
-    a.start();
-    a.connect(b);
-    b.gain.value = 0.1;
-    b.connect(output);
-     oscs.push(b);
+	output.gain.value = tonelev;//0.2;
+
+	var oscs = [];
+	for (var i = 0; i < 60; i++) {
+	    var a = context.createOscillator();
+	    var b = context.createGain()
+	    a.frequency.value = 50*(7+Math.pow(1.7, i/18));
+	    a.start();
+	    a.connect(b);
+	    b.gain.value = 0.1;
+	    b.connect(output);
+	     oscs.push(b);
+	}
+
+	var n = 0;
+	window.setInterval(function(){
+	  for (var i = 0; i < oscs.length; i++) {
+	    oscs[i].gain.value = 0.2*pow(noise(i, n),3); 
+	  } n+= 0.1; web();
+	},50);
+
+	///speech synthesis
+
+	msg = new SpeechSynthesisUtterance();
+	let el = event.srcElement;
+	el.parentNode.removeChild(el);
+
 }
-
-var n = 0;
-window.setInterval(function(){
-  for (var i = 0; i < oscs.length; i++) {
-    oscs[i].gain.value = 0.2*pow(noise(i, n),3); 
-  } n+= 0.1; web();
-},50);
-
-///speech synthesis
-
-var msg = new SpeechSynthesisUtterance();
-var voices;
 
 window.speechSynthesis.onvoiceschanged = function(){
 
@@ -284,10 +293,10 @@ var wmap = [];
 
 function setup() {
 
-createCanvas(500, 500).parent("display");
-noLoop();
-textSize(15);
-noFill();
+	createCanvas(500, 500).parent("display");
+	noLoop();
+	textSize(15);
+	noFill();
 
 }
 
